@@ -32,7 +32,7 @@ class RAM(nn.Module):
                 u[i].append(0)
         u = torch.tensor(u).to(self.opt.device).unsqueeze(2)
         weight = torch.tensor(weight).to(self.opt.device).unsqueeze(2)
-        memory = torch.cat([memory*weight, u], dim=2)       
+        memory = torch.cat([memory.float()*weight.float(), u.float()], dim=2)
         return memory
 
     def __init__(self, embedding_matrix, opt):
