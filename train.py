@@ -11,6 +11,7 @@ from tensorboardX import SummaryWriter
 import argparse
 import math
 import os
+import matplotlib.pyplot as plt
 
 from data_utils import build_tokenizer, build_embedding_matrix, Tokenizer4Bert, ABSADataset
 
@@ -85,9 +86,14 @@ class Instructor:
         max_test_acc = 0
         max_f1 = 0
         global_step = 0
+        x = []
+        xt = []
+        tmp_epoch =[]
+        y = []
+        y1 = []
         for epoch in range(self.opt.num_epoch):
             print('>' * 100)
-            print('epoch: ', epoch)
+            print('epoch: ', epoch,' epochs:', global_step)
             n_correct, n_total = 0, 0
             for i_batch, sample_batched in enumerate(self.train_data_loader):
                 global_step += 1
@@ -104,6 +110,21 @@ class Instructor:
                 loss = torch.nn.functional.cross_entropy(outputs, targets)
                 loss.backward()
                 optimizer.step()
+
+
+                x.append(global_step)
+
+                if(len(tmp_epoch) == 0):
+                    xt.append(str(epoch))
+                else:
+                    if(epoch > tmp_epoch[len(tmp_epoch)-1]):
+                        xt.append(str(epoch))
+                    else:
+                        xt.append("")
+
+                tmp_epoch.append(epoch)
+
+                y.append(loss)
 
                 if global_step % self.opt.log_step == 0:
                     n_correct += (torch.argmax(outputs, -1) == targets).sum().item()
@@ -127,6 +148,16 @@ class Instructor:
                     writer.add_scalar('acc', train_acc, global_step)
                     writer.add_scalar('test_acc', test_acc, global_step)
                     print('loss: {:.4f}, acc: {:.4f}, test_acc: {:.4f}, f1: {:.4f}'.format(loss.item(), train_acc, test_acc, f1))
+        plt.figure()
+        plt.plot(x,y,'r')
+        plt.xlabel('globle_step')
+        plt.ylabel('loss')
+        plt.xticks(x,xt)
+        #plt.figure()
+        # plt.bar(x, y1,0.2,alpha=1,color='b')
+        # plt.xlabel('globle_step')
+        # plt.ylabel('epoch')
+        plt.show()
 
         writer.close()
         return max_test_acc, max_f1
@@ -186,7 +217,7 @@ def main():
     parser.add_argument('--l2reg', default=0, type=float)
     parser.add_argument('--num_epoch', default=20, type=int)
     parser.add_argument('--batch_size', default=128, type=int)  # try 16, 32, 64 for BERT models
-    parser.add_argument('--log_step', default=3, type=int)
+    parser.add_argument('--log_step', default=5, type=int)
     parser.add_argument('--logdir', default='log', type=str)
     parser.add_argument('--embed_dim', default=300, type=int)
     parser.add_argument('--hidden_dim', default=300, type=int)
@@ -265,7 +296,7 @@ def main():
         if opt.device is None else torch.device(opt.device)
 
     ins = Instructor(opt)
-    ins.run(3)
+    ins.run(1)
 
 
 if __name__ == '__main__':
