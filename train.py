@@ -91,10 +91,14 @@ class Instructor:
         tmp_epoch =[]
         y = []
         y1 = []
+        y_epoch = []
+        x_epoch = []
         for epoch in range(self.opt.num_epoch):
             print('>' * 100)
             print('epoch: ', epoch,' epochs:', global_step)
             n_correct, n_total = 0, 0
+
+            epoch_loss = 100
             for i_batch, sample_batched in enumerate(self.train_data_loader):
                 global_step += 1
 
@@ -125,6 +129,7 @@ class Instructor:
                 tmp_epoch.append(epoch)
 
                 y.append(loss)
+                epoch_loss = loss
 
                 if global_step % self.opt.log_step == 0:
                     n_correct += (torch.argmax(outputs, -1) == targets).sum().item()
@@ -148,15 +153,20 @@ class Instructor:
                     writer.add_scalar('acc', train_acc, global_step)
                     writer.add_scalar('test_acc', test_acc, global_step)
                     print('loss: {:.4f}, acc: {:.4f}, test_acc: {:.4f}, f1: {:.4f}'.format(loss.item(), train_acc, test_acc, f1))
+            y_epoch.append(epoch_loss)
+            x_epoch.append(epoch)
+
         plt.figure()
         plt.plot(x,y,'r')
         plt.xlabel('globle_step')
         plt.ylabel('loss')
         plt.xticks(x,xt)
-        #plt.figure()
-        # plt.bar(x, y1,0.2,alpha=1,color='b')
-        # plt.xlabel('globle_step')
-        # plt.ylabel('epoch')
+
+        plt.figure()
+        plt.plot(x_epoch, y_epoch,'b')
+        plt.xlabel('epoch')
+        plt.ylabel('loss')
+
         plt.show()
 
         writer.close()
