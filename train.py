@@ -86,20 +86,32 @@ class Instructor:
         max_test_acc = 0
         max_f1 = 0
         global_step = 0
-        x = []
-        xt = []
-        tmp_epoch =[]
+
+        x = []          #globle_step
         y = []
+
+        xt = []         #epoch
+        tmp_epoch =[]
+
         y1 = []
+
         y_epoch = []
         x_epoch = []
+
+        y_testacc=[]
+
         for epoch in range(self.opt.num_epoch):
             print('>' * 100)
-            print('epoch: ', epoch,' epochs:', global_step)
+            print('epoch: ', epoch)
             n_correct, n_total = 0, 0
 
             epoch_loss = 100
+            max_test_acc_inepoch = 0
+
             for i_batch, sample_batched in enumerate(self.train_data_loader):
+
+
+
                 global_step += 1
 
                 # switch model to training mode, clear gradient accumulators
@@ -139,6 +151,10 @@ class Instructor:
                     # switch model to evaluation mode
                     self.model.eval()
                     test_acc, f1 = self._evaluate_acc_f1()
+
+                    if test_acc>max_test_acc_inepoch:
+                        max_test_acc_inepoch=test_acc
+
                     if test_acc > max_test_acc:
                         max_test_acc = test_acc
                         if not os.path.exists('state_dict'):
@@ -155,6 +171,7 @@ class Instructor:
                     print('loss: {:.4f}, acc: {:.4f}, test_acc: {:.4f}, f1: {:.4f}'.format(loss.item(), train_acc, test_acc, f1))
             y_epoch.append(epoch_loss)
             x_epoch.append(epoch)
+            y_testacc.append(max_test_acc_inepoch)
 
         plt.figure()
         plt.plot(x,y,'r')
@@ -167,7 +184,14 @@ class Instructor:
         plt.xlabel('epoch')
         plt.ylabel('loss')
 
+        plt.figure()
+        plt.plot(x_epoch, y_testacc, 'b')
+        plt.xlabel('epoch')
+        plt.ylabel('test_Acc')
+
         plt.show()
+
+        print(y_testacc)
 
         writer.close()
         return max_test_acc, max_f1
@@ -225,7 +249,7 @@ def main():
     parser.add_argument('--learning_rate', default=0.001, type=float)  # try 5e-5, 3e-5, 2e-5 for BERT models (sensitive)
     parser.add_argument('--dropout', default=0.1, type=float)
     parser.add_argument('--l2reg', default=0, type=float)
-    parser.add_argument('--num_epoch', default=20, type=int)
+    parser.add_argument('--num_epoch', default=50, type=int)
     parser.add_argument('--batch_size', default=128, type=int)  # try 16, 32, 64 for BERT models
     parser.add_argument('--log_step', default=5, type=int)
     parser.add_argument('--logdir', default='log', type=str)
