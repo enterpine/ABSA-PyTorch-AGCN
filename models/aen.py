@@ -45,8 +45,8 @@ class AEN(nn.Module):
         self.embed = nn.Embedding.from_pretrained(torch.tensor(embedding_matrix, dtype=torch.float))
         self.squeeze_embedding = SqueezeEmbedding()
 
-        self.attn_k = Attention(opt.embed_dim, out_dim=opt.hidden_dim, n_head=8, score_function='mlp', dropout=opt.dropout)
-        self.attn_q = Attention(opt.embed_dim, out_dim=opt.hidden_dim, n_head=8, score_function='mlp', dropout=opt.dropout)
+        self.attn_k = Attention(opt.embed_dim, out_dim=opt.hidden_dim, n_head=8, score_function='mlp', dropout=0.1)
+        self.attn_q = Attention(opt.embed_dim, out_dim=opt.hidden_dim, n_head=8, score_function='mlp', dropout=0.1)
 
         ###
         D = 300
@@ -58,7 +58,7 @@ class AEN(nn.Module):
         self.convs3 = nn.ModuleList([nn.Conv1d(D, Co, K, padding=K - 2) for K in [3]])
 
         # self.convs3 = nn.Conv1d(D, 300, 3, padding=1), smaller is better
-        self.dropout = nn.Dropout(0.2)
+        self.dropout = nn.Dropout(opt.dropout)
 
         self.fc1 = nn.Linear(len(Ks) * Co, C)
         self.fc_aspect = nn.Linear(100, Co)

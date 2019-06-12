@@ -231,7 +231,7 @@ class Instructor:
             # Loss and Optimizer
             criterion = nn.CrossEntropyLoss()
             _params = filter(lambda p: p.requires_grad, self.model.parameters())
-            optimizer = self.opt.optimizer(_params, lr=self.opt.learning_rate, weight_decay=self.opt.l2reg, lr_decay=0)
+            optimizer = self.opt.optimizer(_params, lr=self.opt.learning_rate, weight_decay=self.opt.l2reg)
             max_test_acc, max_f1 = self._train(criterion, optimizer)
             print('max_test_acc: {0}     max_f1: {1}'.format(max_test_acc, max_f1))
             max_test_acc_overall = max(max_test_acc, max_test_acc_overall)
@@ -244,11 +244,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', default='lstm', type=str)
     parser.add_argument('--dataset', default='twitter', type=str, help='twitter, restaurant, laptop')
-    parser.add_argument('--optimizer', default='adagrad', type=str)
+    parser.add_argument('--optimizer', default='adam', type=str)
     parser.add_argument('--initializer', default='xavier_uniform_', type=str)
     parser.add_argument('--learning_rate', default=0.001, type=float)  # try 5e-5, 3e-5, 2e-5 for BERT models (sensitive)
-    parser.add_argument('--dropout', default=0.2, type=float)
-    parser.add_argument('--l2reg', default=0, type=float)
+    parser.add_argument('--dropout', default=0.1, type=float)
+    parser.add_argument('--l2reg', default=0.01, type=float)
     parser.add_argument('--num_epoch', default=30, type=int)
     parser.add_argument('--batch_size', default=64, type=int)  # try 16, 32, 64 for BERT models
     parser.add_argument('--log_step', default=1, type=int)
