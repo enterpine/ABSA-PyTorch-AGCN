@@ -49,7 +49,7 @@ class AEN(nn.Module):
         self.attn_q = Attention(opt.embed_dim, out_dim=opt.hidden_dim, n_head=8, score_function='mlp', dropout=0.1)
 
         ###
-        D = 300
+        D = opt.hidden_dim
         Co = 100
         Ks = [3, 4, 5]
         C = 3

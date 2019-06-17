@@ -250,7 +250,7 @@ def main():
     parser.add_argument('--dropout', default=0.1, type=float)
     parser.add_argument('--l2reg', default=0.01, type=float)
     parser.add_argument('--num_epoch', default=30, type=int)
-    parser.add_argument('--batch_size', default=64, type=int)  # try 16, 32, 64 for BERT models
+    parser.add_argument('--batch_size', default=128, type=int)  # try 16, 32, 64 for BERT models
     parser.add_argument('--log_step', default=1, type=int)
     parser.add_argument('--logdir', default='log', type=str)
     parser.add_argument('--embed_dim', default=300, type=int)
