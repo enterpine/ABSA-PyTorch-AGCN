@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-# file: train.py
-# author: songyouwei <youwei0314@gmail.com>
-# Copyright (C) 2018. All Rights Reserved.
+
 from pytorch_pretrained_bert import BertModel
 from sklearn import metrics
 import torch
